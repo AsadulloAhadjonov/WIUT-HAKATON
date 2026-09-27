@@ -129,6 +129,114 @@ def load_predictions_samples() -> dict:
     return {"team": "Prodigy", "videos": {}}
 
 
+def render_annotated_webm(video_path: Path, events: list[list], risk_pairs: list[list], out_path: Path) -> Path:
+    """Render an HTML5-compatible (.webm VP80) annotated video with tracked boxes, HUD, risk bar & active events."""
+    from collections import defaultdict
+    from src.detect_track import track_video
+    from src.utils import load_config
+
+    cfg = load_config()
+    tracks, info = track_video(video_path, cfg)
+    stride = info["stride"]
+    tracks_by_frame = defaultdict(list)
+    if not tracks.empty:
+        for row in tracks.itertuples(index=False):
+            tracks_by_frame[int(row.frame)].append(row)
+
+    risk_by_frame = {int(round(r[0] * info["fps"])): float(r[1]) for r in risk_pairs}
+    out_w, out_h = 854, 480
+    sx, sy = out_w / max(1, info["width"]), out_h / max(1, info["height"])
+
+    fourcc = cv2.VideoWriter_fourcc(*"VP80")
+    writer = cv2.VideoWriter(str(out_path), fourcc, info["fps"], (out_w, out_h))
+    if not writer.isOpened():
+        out_path = out_path.with_suffix(".mp4")
+        writer = cv2.VideoWriter(str(out_path), cv2.VideoWriter_fourcc(*"mp4v"), info["fps"], (out_w, out_h))
+
+    obj_bgr = {
+        "car": (255, 180, 50),
+        "bus": (50, 200, 255),
+        "truck": (50, 140, 255),
+        "motorcycle": (255, 100, 255),
+        "bicycle": (200, 255, 50),
+        "person": (80, 255, 80),
+    }
+
+    cap = cv2.VideoCapture(str(video_path))
+    f_idx = 0
+    last_rows = []
+    while True:
+        ok, frame = cap.read()
+        if not ok or frame is None:
+            break
+        t_sec = f_idx / info["fps"]
+        sampled_f = (f_idx // stride) * stride
+        if sampled_f in tracks_by_frame:
+            last_rows = tracks_by_frame[sampled_f]
+
+        canvas = cv2.resize(frame, (out_w, out_h))
+        for r in last_rows:
+            x1, y1 = int(r.x1 * sx), int(r.y1 * sy)
+            x2, y2 = int(r.x2 * sx), int(r.y2 * sy)
+            c_bgr = obj_bgr.get(r.cls, (200, 200, 200))
+            cv2.rectangle(canvas, (x1, y1), (x2, y2), c_bgr, 2)
+            cv2.putText(
+                canvas,
+                f"#{r.track_id} {r.cls}",
+                (x1, max(15, y1 - 5)),
+                cv2.FONT_HERSHEY_SIMPLEX,
+                0.42,
+                c_bgr,
+                1,
+                cv2.LINE_AA,
+            )
+
+        active_ev = [ev for ev in events if ev[0] <= t_sec <= ev[1]]
+        risk_val = risk_by_frame.get(f_idx, 0.0)
+
+        overlay = canvas.copy()
+        cv2.rectangle(overlay, (0, 0), (out_w, 38), (20, 20, 25), -1)
+        cv2.addWeighted(overlay, 0.75, canvas, 0.25, 0, canvas)
+        cv2.putText(
+            canvas,
+            f"Team Prodigy | t = {t_sec:05.2f}s | Frame {f_idx}",
+            (10, 25),
+            cv2.FONT_HERSHEY_SIMPLEX,
+            0.52,
+            (255, 255, 255),
+            1,
+            cv2.LINE_AA,
+        )
+
+        bar_w = int(150 * min(1.0, max(0.0, risk_val)))
+        r_col = (40, 40, 230) if risk_val >= 0.5 else ((30, 180, 245) if risk_val >= 0.25 else (80, 200, 80))
+        cv2.putText(canvas, f"Risk: {risk_val:.2f}", (out_w - 265, 25), cv2.FONT_HERSHEY_SIMPLEX, 0.52, (255, 255, 255), 1, cv2.LINE_AA)
+        cv2.rectangle(canvas, (out_w - 165, 11), (out_w - 15, 28), (90, 90, 90), 1)
+        if bar_w > 0:
+            cv2.rectangle(canvas, (out_w - 165, 11), (out_w - 165 + bar_w, 28), r_col, -1)
+
+        for e_i, (es, ee, ecls) in enumerate(active_ev[:4]):
+            y_top = 46 + e_i * 28
+            cv2.rectangle(canvas, (10, y_top), (295, y_top + 23), (38, 38, 220), -1)
+            cv2.putText(
+                canvas,
+                f"EVENT: {ecls} [{es:.1f}s-{ee:.1f}s]",
+                (16, y_top + 16),
+                cv2.FONT_HERSHEY_SIMPLEX,
+                0.45,
+                (255, 255, 255),
+                1,
+                cv2.LINE_AA,
+            )
+
+        writer.write(canvas)
+        f_idx += 1
+
+    cap.release()
+    writer.release()
+    return out_path
+
+
 def render_timeline_and_risk(events: list[list], risk_pairs: list[list], duration: float):
     """Draw readable Matplotlib Event Timeline and Causal Risk Curve."""
     fig, (ax_ev, ax_r) = plt.subplots(
@@ -376,15 +484,22 @@ if page == "🔍 1. Live Demo & Webcam":
                     )
 
                 with col_vid:
-                    st.markdown(f"#### 🎬 Video Playback (Jumping to `t = {jump_sec}s`)")
-                    # Use annotated video if available for sample
+                    st.markdown(f"#### 🎬 Annotated Video Playback (Jumping to `t = {jump_sec}s`)")
                     samples_sorted = sorted((ROOT / "samples").glob("*.mp4"))
                     ann_vid = None
                     for idx_s, sp in enumerate(samples_sorted):
                         if sp.name == video_path.name:
-                            cand = ROOT / "dev" / "annotated" / f"sample_{idx_s + 1}_annotated.mp4"
-                            if cand.exists():
-                                ann_vid = cand
+                            for ext in (".webm", ".mp4"):
+                                cand = ROOT / "dev" / "annotated" / f"sample_{idx_s + 1}_annotated{ext}"
+                                if cand.exists():
+                                    ann_vid = cand
+                                    break
+                    if ann_vid is None:
+                        custom_ann = Path(tempfile.gettempdir()) / f"prodigy_ann_{video_path.stem}.webm"
+                        if not custom_ann.exists():
+                            with st.spinner("Rendering annotated video overlay..."):
+                                custom_ann = render_annotated_webm(video_path, events, risk_pairs, custom_ann)
+                        ann_vid = custom_ann
                     st.video(str(ann_vid or video_path), start_time=jump_sec)
 
     with tab_webcam:
@@ -434,8 +549,10 @@ elif page == "🎬 2. Sample-Video Results":
         st.markdown(f"## 📹 Sample Video {idx_v + 1}: `{vname}` ({dur:.1f}s @ {fps:.0f}fps)")
         c_vid, c_tbl = st.columns([3, 2])
         with c_vid:
-            ann_path = ROOT / "dev" / "annotated" / f"sample_{idx_v + 1}_annotated.mp4"
-            st.video(str(ann_path if ann_path.exists() else vpath))
+            ann_webm = ROOT / "dev" / "annotated" / f"sample_{idx_v + 1}_annotated.webm"
+            ann_mp4 = ROOT / "dev" / "annotated" / f"sample_{idx_v + 1}_annotated.mp4"
+            play_path = ann_webm if ann_webm.exists() else (ann_mp4 if ann_mp4.exists() else vpath)
+            st.video(str(play_path))
             st.caption("Rendered with our custom annotation pipeline (tracked bounding boxes, IDs, live risk bar, and active event banners).")
         with c_tbl:
             st.markdown(f"**Detected Events ({len(events)} segments):**")

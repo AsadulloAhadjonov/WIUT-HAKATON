@@ -187,7 +187,7 @@ postprocess:
     accident: {merge_gap_s: 3.0, min_len_s: 0.5}
     solid_line_crossing: {merge_gap_s: 0.5, min_len_s: 0.5}
     congestion: {merge_gap_s: 5.0, min_len_s: 8.0}
-    stopped_vehicle: {merge_gap_s: 3.0, min_len_s: 8.0}
+    stopped_vehicle: {merge_gap_s: 3.0, min_len_s: 2.5}
     jaywalking: {merge_gap_s: 1.0, min_len_s: 0.5}
     failure_to_yield: {merge_gap_s: 0.5, min_len_s: 0.3}
     red_light: {merge_gap_s: 0.5, min_len_s: 0.3}

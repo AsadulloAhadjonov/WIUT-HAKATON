@@ -16,7 +16,12 @@ pytestmark = pytest.mark.skipif(os.environ.get("RUN_E2E") != "1", reason="RUN_E2
 def test_synthetic_video_end_to_end(tmp_path):
     video = tmp_path / "synthetic.mp4"
     subprocess.run([sys.executable, str(ROOT / "tests/make_synthetic_video.py"), "--out", str(video)], check=True)
-    env = {**os.environ, "TRAFFIC_SCENE": "configs/scene_synthetic.yaml", "TRAFFIC_STRICT": "1"}
+    env = {
+        **os.environ,
+        "TRAFFIC_PARAMS": "configs/params_synthetic.yaml",
+        "TRAFFIC_SCENE": "configs/scene_synthetic.yaml",
+        "TRAFFIC_STRICT": "1",
+    }
     code = (
         "import json, solution; solution._cfg()['use_cache'] = False; "
         f"evts = solution.detect_events({str(video)!r}); "
