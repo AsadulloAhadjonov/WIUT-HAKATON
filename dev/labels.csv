@@ -1,0 +1,24 @@
+video,class,start_s,end_s,izoh
+Surveillance Camera Footage.mp4,solid_line_crossing,6.1,7.6,dev_annotation
+Surveillance Camera Footage.mp4,wrong_way,16.1,20.2,dev_annotation
+Surveillance Camera Footage.mp4,near_miss,16.5,19.2,dev_annotation
+Surveillance Camera Footage.mp4,solid_line_crossing,18.1,19.6,dev_annotation
+Surveillance Camera Footage.mp4,wrong_way,22.2,23.9,dev_annotation
+Surveillance Camera Footage.mp4,red_light,23.4,33.0,dev_annotation
+Surveillance Camera Footage.mp4,solid_line_crossing,24.0,25.5,dev_annotation
+Surveillance Camera Footage.mp4,near_miss,26.6,30.0,dev_annotation
+Surveillance Camera Footage.mp4,solid_line_crossing,26.9,28.4,dev_annotation
+Surveillance Camera Footage.mp4,solid_line_crossing,29.8,31.3,dev_annotation
+Surveillance Camera Footage.mp4,solid_line_crossing,32.5,34.0,dev_annotation
+Surveillance Camera Footage.mp4,solid_line_crossing,40.1,41.6,dev_annotation
+В Волгограде массовая авария парализовала работу трамваев.mp4,jaywalking,0.0,1.84,dev_annotation
+В Волгограде массовая авария парализовала работу трамваев.mp4,stopped_vehicle,0.0,21.84,dev_annotation
+В Волгограде массовая авария парализовала работу трамваев.mp4,solid_line_crossing,0.62,3.96,dev_annotation
+В Волгограде массовая авария парализовала работу трамваев.mp4,congestion,0.8,21.84,dev_annotation
+В Волгограде массовая авария парализовала работу трамваев.mp4,wrong_way,2.48,11.84,dev_annotation
+В Волгограде массовая авария парализовала работу трамваев.mp4,failure_to_yield,2.62,4.34,dev_annotation
+В Волгограде массовая авария парализовала работу трамваев.mp4,failure_to_yield,5.98,7.62,dev_annotation
+В Волгограде массовая авария парализовала работу трамваев.mp4,red_light,6.3,8.8,dev_annotation
+В Волгограде массовая авария парализовала работу трамваев.mp4,solid_line_crossing,8.06,9.56,dev_annotation
+В Волгограде массовая авария парализовала работу трамваев.mp4,red_light,13.9,16.4,dev_annotation
+В Волгограде массовая авария парализовала работу трамваев.mp4,accident,14.48,21.84,dev_annotation

@@ -1,0 +1,9 @@
+cache/
+__pycache__/
+*.pyc
+.pytest_cache/
+.venv/
+wheels/
+samples/
+dev/predictions_local.json
+scene_check.png

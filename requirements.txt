@@ -1,0 +1,15 @@
+# Python 3.10 yoki 3.11. Versiyalar qotirilgan — reproducibility uchun o'zgartirmang.
+# torch: GPU mashinada CUDA'li, CPU mashinada CPU versiyasi o'rnatiladi (README → O'rnatish).
+torch>=2.4,<3
+torchvision>=0.19
+ultralytics==8.4.160        # ichki ByteTrack API ishlatiladi — versiyani O'ZGARTIRMANG
+lap==0.5.13                 # ByteTrack uchun; bo'lmasa ultralytics uni internetdan o'rnatishga urinadi
+numpy==2.4.4
+pandas==3.0.2
+opencv-python==4.13.0.92
+PyYAML==6.0.3
+scipy==1.17.1
+pytest==9.1.1
+# Web app uchun
+streamlit>=1.32.0
+matplotlib>=3.8.0

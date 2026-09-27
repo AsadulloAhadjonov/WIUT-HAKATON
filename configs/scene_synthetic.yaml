@@ -1,0 +1,17 @@
+# Faqat tests/make_synthetic_video.py videosi uchun (1280x720). Namuna sifatida ham foydali.
+image_size: [1280, 720]
+
+zones:
+  roadway: [[0, 220], [1280, 220], [1280, 560], [0, 560]]
+  crosswalk: [[556, 220], [724, 220], [724, 560], [556, 560]]
+
+lanes:
+  - id: upper_eastbound                      # testda 2-avtobus bu polosada TESKARI yuradi (wrong_way)
+    polygon: [[0, 220], [1280, 220], [1280, 390], [0, 390]]
+    direction: [[800, 300], [1000, 300]]      # chapdan o'ngga
+  - id: lower_eastbound
+    polygon: [[0, 390], [1280, 390], [1280, 560], [0, 560]]
+    direction: [[200, 480], [400, 480]]       # chapdan o'ngga
+
+lines:
+  stop_line: [[540, 390], [540, 560]]

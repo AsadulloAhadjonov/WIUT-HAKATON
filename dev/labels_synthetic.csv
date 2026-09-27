@@ -1,0 +1,4 @@
+video,class,start_s,end_s,izoh
+synthetic.mp4,stopped_vehicle,3.0,7.0,1-avtobus piyoda oldida to'xtaydi
+synthetic.mp4,wrong_way,8.0,14.0,2-avtobus teskari polosada
+synthetic.mp4,near_miss,1.5,3.0,avtobus piyodaga yaqinlashadi

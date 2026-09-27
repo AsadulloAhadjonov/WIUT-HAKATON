@@ -1,0 +1,87 @@
+# SAHNA — Surveillance Camera Footage.mp4 (1280x720, chorrahadagi kamera)
+# Koordinatalar: python scripts/draw_scene.py "samples/Surveillance Camera Footage.mp4" --out dev/scene_check.png
+
+image_size: [1280, 720]
+
+zones:
+  # Asosiy yo'l qatnov qismi
+  roadway: [
+    [0, 180],
+    [1280, 180],
+    [1280, 720],
+    [0, 720]
+  ]
+
+  # Chorrahaning markaziy qismi (to'qnashuv, near_miss va failure_to_yield uchun)
+  intersection: [
+    [140, 220],
+    [980, 260],
+    [920, 660],
+    [80, 600]
+  ]
+
+  # Svetafor oldidagi navbat zonalari (bu yerda qizil chiroqda kutib turgan mashinalar stopped_vehicle EMAS)
+  signal_queue: [
+    [880, 350],
+    [1280, 350],
+    [1280, 720],
+    [800, 720]
+  ]
+
+  signal_queue_north: [
+    [450, 0],
+    [1080, 0],
+    [960, 275],
+    [450, 230]
+  ]
+
+  # Piyodalar o'tish joylari (crosswalk)
+  crosswalk_east: [
+    [860, 340],
+    [1060, 370],
+    [930, 680],
+    [750, 640]
+  ]
+
+  crosswalk_north: [
+    [350, 200],
+    [920, 255],
+    [890, 315],
+    [320, 260]
+  ]
+
+  crosswalk_west: [
+    [90, 290],
+    [260, 320],
+    [150, 590],
+    [10, 560]
+  ]
+
+  # Asosiy crosswalk (sharqiy o'tish joyi — piyodalar faol o'tadigan joy)
+  crosswalk: [
+    [860, 340],
+    [1060, 370],
+    [930, 680],
+    [750, 640]
+  ]
+
+lanes:
+  # Gorizontal yo'l — chapdan o'ngga (pastki polosalar)
+  - id: horiz_eastbound
+    polygon: [[0, 430], [1280, 480], [1280, 700], [0, 640]]
+    direction: [[100, 540], [1100, 600]]
+
+  # Gorizontal yo'l — o'ngdan chapga (o'rta-yuqori polosalar)
+  - id: horiz_westbound
+    polygon: [[0, 290], [1280, 340], [1280, 480], [0, 430]]
+    direction: [[1100, 410], [100, 360]]
+
+  # Yuqoridan chorrahaga tushuvchi yo'l (shimoldan janubga)
+  - id: north_approach
+    polygon: [[450, 0], [920, 0], [760, 320], [360, 270]]
+    direction: [[680, 50], [560, 280]]
+
+lines:
+  stop_line: [[350, 225], [900, 280]]
+  stop_line_east: [[950, 360], [840, 660]]
+  solid_line: [[0, 430], [1280, 480]]

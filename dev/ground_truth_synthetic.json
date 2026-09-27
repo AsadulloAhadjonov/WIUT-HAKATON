@@ -1,0 +1,19 @@
+{
+ "synthetic.mp4": [
+  {
+   "class": "stopped_vehicle",
+   "start": 3.0,
+   "end": 7.0
+  },
+  {
+   "class": "wrong_way",
+   "start": 8.0,
+   "end": 14.0
+  },
+  {
+   "class": "near_miss",
+   "start": 1.5,
+   "end": 3.0
+  }
+ ]
+}

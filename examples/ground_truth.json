@@ -1,0 +1,15 @@
+{
+  "test_001.mp4": {
+    "duration": 600.0,
+    "fps": 25.0,
+    "events": [
+      [12.0, 19.0, "accident"],
+      [40.0, 44.0, "red_light"]
+    ]
+  },
+  "test_002.mp4": {
+    "duration": 300.0,
+    "fps": 25.0,
+    "events": []
+  }
+}

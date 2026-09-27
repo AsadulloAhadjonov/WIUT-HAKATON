@@ -1,0 +1,67 @@
+[
+  {
+    "config": "YOLOv8s + ByteTrack @ 10 Hz (Default)",
+    "detector": "yolov8s.pt (640px)",
+    "tracker": "ByteTrack",
+    "target_fps": 10,
+    "f1_0.3": 0.962,
+    "f1_0.5": 0.923,
+    "f1_0.7": 0.885,
+    "score_a": 0.923,
+    "score_b": 0.814,
+    "x_realtime_gpu": 0.28,
+    "x_realtime_cpu": 1.18
+  },
+  {
+    "config": "YOLOv8n + ByteTrack @ 10 Hz (Fast)",
+    "detector": "yolov8n.pt (640px)",
+    "tracker": "ByteTrack",
+    "target_fps": 10,
+    "f1_0.3": 0.884,
+    "f1_0.5": 0.812,
+    "f1_0.7": 0.74,
+    "score_a": 0.812,
+    "score_b": 0.742,
+    "x_realtime_gpu": 0.14,
+    "x_realtime_cpu": 0.52
+  },
+  {
+    "config": "YOLOv8s + ByteTrack @ 5 Hz (Low-FPS)",
+    "detector": "yolov8s.pt (640px)",
+    "tracker": "ByteTrack",
+    "target_fps": 5,
+    "f1_0.3": 0.91,
+    "f1_0.5": 0.835,
+    "f1_0.7": 0.715,
+    "score_a": 0.82,
+    "score_b": 0.728,
+    "x_realtime_gpu": 0.16,
+    "x_realtime_cpu": 0.61
+  },
+  {
+    "config": "YOLOv8s + IoU-Greedy (No Kalman Tracking)",
+    "detector": "yolov8s.pt (640px)",
+    "tracker": "None (Greedy IoU)",
+    "target_fps": 10,
+    "f1_0.3": 0.745,
+    "f1_0.5": 0.61,
+    "f1_0.7": 0.465,
+    "score_a": 0.607,
+    "score_b": 0.51,
+    "x_realtime_gpu": 0.25,
+    "x_realtime_cpu": 1.1
+  },
+  {
+    "config": "YOLOv8s + ByteTrack (No Post-Processing)",
+    "detector": "yolov8s.pt (640px)",
+    "tracker": "ByteTrack (Raw)",
+    "target_fps": 10,
+    "f1_0.3": 0.84,
+    "f1_0.5": 0.73,
+    "f1_0.7": 0.58,
+    "score_a": 0.717,
+    "score_b": 0.814,
+    "x_realtime_gpu": 0.28,
+    "x_realtime_cpu": 1.18
+  }
+]

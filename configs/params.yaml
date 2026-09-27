@@ -1,0 +1,209 @@
+# Barcha sozlanadigan qiymatlar shu yerda. Kodga raqam yozmang — shu faylga yozing.
+
+seed: 42
+scene_file: configs/scene.yaml
+use_cache: true          # Part A treklarini cache/ ga yozadi (faqat Part A, RiskEstimator ishlatmaydi)
+cache_dir: cache
+
+detector:
+  weights: weights/yolov8s.pt   # REPODA turadi, internetdan yuklanmaydi
+  imgsz: 640
+  conf: 0.2
+  iou: 0.5
+  device: auto                  # auto | cpu | cuda:0
+  half: false                   # GPU'da true — tezroq
+  batch: 8
+  classes:                      # COCO id -> bizdagi nom
+    0: person
+    1: bicycle
+    2: car
+    3: motorcycle
+    5: bus
+    7: truck
+
+tracker:                        # ByteTrack (ultralytics)
+  track_high_thresh: 0.25
+  track_low_thresh: 0.1
+  new_track_thresh: 0.25
+  match_thresh: 0.8
+  track_buffer_s: 1.5
+
+sampling:
+  target_fps: 10                # detektor chastotasi; 25 fps video -> har 2-kadr
+
+features:
+  smooth_window_s: 0.6
+  min_track_len_s: 0.5
+  drop_riders: true             # transport ichidagi/ustidagi odamlar piyoda hisoblanmaydi
+  rider_overlap: 0.6
+
+# ---------------------------------------------------------------------------------------------
+# HODISALAR: 14 ta rasmiy sinf (solution.py -> CLASSES)
+# ---------------------------------------------------------------------------------------------
+events:
+
+  # 1. accident — to'qnashuv (bbox kesishadi, oldin harakatda, keyin to'xtaydi)
+  - class: accident
+    rule: accident
+    objects_a: [car, bus, truck, motorcycle]
+    objects_b: [car, bus, truck, motorcycle, person, bicycle]
+    exclude_zones: [signal_queue, signal_queue_north]
+    iou_min: 0.10
+    min_speed_before: 0.45
+    stop_speed: 0.15
+    post_stop_s: 2.0
+    pre_s: 0.0
+    post_s: 3.0
+
+  # 2. near_miss — xavfli yaqinlashish (TTC kichik, kontakt yo'q)
+  - class: near_miss
+    rule: near_miss
+    objects_a: [car, bus, truck, motorcycle]
+    objects_b: [person, bicycle, car, bus, truck, motorcycle]
+    ttc_max_s: 1.6
+    margin: 0.75
+    max_dist: 3.0
+    min_speed: 0.35
+    iou_contact: 0.05
+    min_duration_s: 0.3
+    pad_s: 0.8
+
+  # 3. red_light — qizil chiroqda (ko'ndalang oqim faol paytda) stop_line ni kesib o'tish
+  - class: red_light
+    rule: red_light
+    line: stop_line
+    objects: [car, bus, truck, motorcycle]
+    min_speed: 0.45
+    pre_s: 0.5
+    post_s: 2.0
+    enabled: true
+
+  # 4. wrong_way — polosa yo'nalishiga qarshi harakat
+  - class: wrong_way
+    rule: wrong_way
+    objects: [car, bus, truck, motorcycle, bicycle]
+    min_speed: 0.45
+    cos_threshold: 0.55
+    min_duration_s: 1.5
+
+  # 5. illegal_u_turn — noqonuniy U-burilish (150+ gradus va haqiqiy masofa)
+  - class: illegal_u_turn
+    rule: u_turn
+    objects: [car, bus, truck, motorcycle]
+    min_speed: 0.35
+    window_s: 7.0
+    min_angle_deg: 155
+    min_leg_sizes: 1.5
+
+  # 6. stopped_vehicle — yo'lning qatnov qismida >= 10s to'xtab qolish (svetafor navbatidan tashqari)
+  - class: stopped_vehicle
+    rule: stopped
+    objects: [car, bus, truck, motorcycle]
+    zones: [roadway]
+    exclude_zones: [signal_queue, signal_queue_north]
+    max_speed: 0.08
+    min_duration_s: 10.0
+
+  # 7. jaywalking — piyodaning o'tish joyidan tashqarida yo'lga chiqishi
+  - class: jaywalking
+    rule: in_zone
+    objects: [person]
+    zones: [intersection]
+    exclude_zones: [crosswalk, crosswalk_east, crosswalk_north, crosswalk_west]
+    min_duration_s: 1.2
+    min_speed: 0.12
+
+  # 8. failure_to_yield — o'tish joyidagi piyodaga yo'l bermaslik
+  - class: failure_to_yield
+    rule: failure_to_yield
+    zones: [crosswalk, crosswalk_east, crosswalk_north, crosswalk_west]
+    objects_vehicles: [car, bus, truck, motorcycle]
+    objects_pedestrians: [person]
+    veh_min_speed: 0.25
+    max_dist_factor: 3.2
+    min_duration_s: 0.4
+    pad_s: 0.5
+
+  # 9. illegal_turn — taqiqlangan chiziq orqali burilish
+  - class: illegal_turn
+    rule: illegal_turn
+    objects: [car, bus, truck, motorcycle]
+    min_speed: 0.35
+    turn_angle_deg: 70.0
+    window_s: 5.0
+    min_duration_s: 0.5
+    line: no_turn_line
+
+  # 10. solid_line_crossing — sidirg'a chiziqni kesib polosa almashtirish
+  - class: solid_line_crossing
+    rule: solid_line_crossing
+    objects: [car, bus, truck, motorcycle]
+    line: solid_line
+    min_stable_s: 1.0
+    pre_s: 0.5
+    post_s: 1.0
+
+  # 11. stop_line — stop-chiziqdan o'tib chorrahaga kirmay to'xtash
+  - class: stop_line
+    rule: stop_line
+    objects: [car, bus, truck, motorcycle]
+    line: stop_line
+    stop_speed: 0.08
+    min_stop_s: 3.0
+
+  # 12. congestion — tirbandlik (chorraha/yo'lda >= 6 ta sekin mashina >= 10s)
+  - class: congestion
+    rule: congestion
+    objects: [car, bus, truck, motorcycle]
+    zones: [intersection]
+    exclude_zones: [signal_queue, signal_queue_north]
+    max_speed: 0.10
+    min_count: 4
+    min_duration_s: 8.0
+
+  # 13. road_obstacle — yo'lda harakatsiz begona jism yoki hayvon
+  - class: road_obstacle
+    rule: road_obstacle
+    objects: [cat, dog, horse, sheep, cow, backpack, suitcase]
+    zones: [roadway]
+    max_speed: 0.05
+    min_duration_s: 5.0
+
+  # 14. fire_smoke — olov va tutun
+  - class: fire_smoke
+    rule: fire_smoke
+    min_duration_s: 1.0
+    pad_s: 0.5
+
+postprocess:
+  default:
+    merge_gap_s: 1.0
+    min_len_s: 0.8
+    pad_s: 0.0
+  per_class:
+    near_miss: {merge_gap_s: 1.5, min_len_s: 0.5}
+    accident: {merge_gap_s: 5.0, min_len_s: 1.0}
+    solid_line_crossing: {merge_gap_s: 1.0, min_len_s: 0.8}
+    congestion: {merge_gap_s: 5.0, min_len_s: 8.0}
+    stopped_vehicle: {merge_gap_s: 3.0, min_len_s: 10.0}
+    jaywalking: {merge_gap_s: 1.5, min_len_s: 1.0}
+    failure_to_yield: {merge_gap_s: 1.5, min_len_s: 0.5}
+    red_light: {merge_gap_s: 1.5, min_len_s: 1.0}
+    stop_line: {merge_gap_s: 1.5, min_len_s: 2.0}
+    road_obstacle: {merge_gap_s: 3.0, min_len_s: 5.0}
+    fire_smoke: {merge_gap_s: 2.0, min_len_s: 1.0}
+
+# ---------------------------------------------------------------------------------------------
+# PART B — onlayn xavf (src/risk.py)
+# ---------------------------------------------------------------------------------------------
+risk:
+  vel_window_s: 0.6
+  stale_s: 1.0
+  tau_ttc_s: 1.5
+  ttc_margin: 0.8
+  tau_dist: 0.5
+  min_speed: 0.35
+  w_density: 0.08
+  density_ref: 25
+  ema_up: 0.45
+  ema_down: 0.12

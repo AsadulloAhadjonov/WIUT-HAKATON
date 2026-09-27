@@ -1,0 +1,27 @@
+[OK] Format validation passed for F:\Telegram\traffic_day1 (2)\traffic_day1\traffic\predictions_samples.json (2 videos).
+
+================ PART A: EVENT DETECTION ================
+Class                  |  F1@0.3 |  F1@0.5 |  F1@0.7 | Mean F1
+----------------------------------------------------------
+accident               |   1.000 |   1.000 |   1.000 |   1.000
+near_miss              |   1.000 |   1.000 |   1.000 |   1.000
+red_light              |   1.000 |   1.000 |   1.000 |   1.000
+wrong_way              |   1.000 |   1.000 |   1.000 |   1.000
+stopped_vehicle        |   1.000 |   1.000 |   1.000 |   1.000
+jaywalking             |   1.000 |   1.000 |   1.000 |   1.000
+failure_to_yield       |   1.000 |   1.000 |   1.000 |   1.000
+solid_line_crossing    |   1.000 |   1.000 |   1.000 |   1.000
+congestion             |   1.000 |   1.000 |   1.000 |   1.000
+----------------------------------------------------------
+Score A (Macro F1)    : 1.0000
+Micro F1 (diagnostic) : 1.0000
+Agnostic F1 (diag)    : 1.0000
+
+============= PART B: ACCIDENT ANTICIPATION =============
+Chance-norm AP        : 0.4225
+F1_alarm              : 0.6667 (P=0.500, R=1.000)
+mTTA                  : 1.60s / 10.0s
+Score B               : 0.4677
+
+===================== OVERALL SCORE =====================
+Model Score (M)       : 0.8403  (0.7 * 1.0000 + 0.3 * 0.4677)
