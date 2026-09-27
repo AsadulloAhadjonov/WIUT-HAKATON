@@ -311,6 +311,7 @@ def render_timeline_and_risk(events: list[list], risk_pairs: list[list], duratio
 with st.sidebar:
     st.markdown("## 🚦 Team Prodigy — TrafficAI")
     st.caption("WIUT Hackathon 2026 — Computer Vision Track")
+    st.markdown("🌐 **[Live Web Portal](https://wiut-hakaton-fnlxwtt8p2v3jnvqcgws4a.streamlit.app/)**")
     st.markdown("🔗 **[GitHub: WIUT-HAKATON](https://github.com/AsadulloAhadjonov/WIUT-HAKATON)**")
     st.divider()
 

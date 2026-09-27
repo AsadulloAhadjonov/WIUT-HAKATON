@@ -1,6 +1,10 @@
 # TrafficAI — Fixed-Camera Traffic Event Detection & Causal Accident Anticipation
 **WIUT Hackathon 2026 — Computer Vision Track (Elimination Task Submission)**
 
+- 🏆 **Team Name:** **Prodigy**
+- 🌐 **Public Website & Live Demo:** **[https://wiut-hakaton-fnlxwtt8p2v3jnvqcgws4a.streamlit.app/](https://wiut-hakaton-fnlxwtt8p2v3jnvqcgws4a.streamlit.app/)**
+- 💻 **GitHub Repository:** **[https://github.com/AsadulloAhadjonov/WIUT-HAKATON](https://github.com/AsadulloAhadjonov/WIUT-HAKATON)**
+
 ---
 
 ## 1. Quick Start (Official Evaluation Commands)
